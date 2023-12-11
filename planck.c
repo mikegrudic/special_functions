@@ -1,13 +1,15 @@
+// Functions to evaluate definite integrals of the function
+// f = 15/pi^4 x^3/(exp(x)-1)
 #include "math.h"
 
 double planck_lower(double x);
 double planck_upper(double x);
 double planck_integral(double x1, double x2);
 
+// Series solution for upper Planck integral from x to infinity evaluated to machine
+// precision for all x, but inefficient for small x
 double planck_upper(double x)
 {
-    // Series solution for upper Planck integral from x to infinity evaluated to machine
-    // precision. Most efficient for large x.
     double tol = 2.220446049250313e-16;
     double series_sum = 0;
     double err = 1e100;
@@ -25,10 +27,10 @@ double planck_upper(double x)
     return series_sum * 0.15398973382026503;
 }
 
+// Series solution for Planck function integral from 0 to x,
+// most efficient for large x, valid to machine precision on [0,3]
 double planck_lower(double x)
 {
-    // Series solution for Planck function integral from 0 to x,
-    // most efficient for large x, valid to machine precision on [0,3]
     double coeffs[] = {
         0.3333333333333333,
         -0.125,
@@ -61,7 +63,6 @@ double planck_lower(double x)
 
     double x_sqr = x * x;
     double val = coeffs[num_coeffs - 1] * x_sqr;
-
     int n = num_coeffs - 1;
     while (n >= 3)
     {
@@ -78,19 +79,16 @@ double planck_lower(double x)
     return val * 0.15398973382026503;
 }
 
+// Returns the definite integral of the normalized (frequency) Planck
+// function f = 15/pi^4 * x^3/(exp(x)-1) from x1 to x2, accurate to machine
+// precision
 double planck_integral(double x1, double x2)
 {
-    // Returns the definite integral of the normalized (frequency) Planck
-    // function f = norm * x^3/(exp(x)-1) from x1 to x2, accurate to machine
-    // precision
-
     double sign;
     if (x2 < x1)
     {
         // assume x1 < x2 throughout, and just remember the original parity
-        double temp = x1;
-        x1 = x2;
-        x2 = temp;
+        double temp = x1, x1 = x2, x2 = temp;
         sign = -1;
     }
     else
