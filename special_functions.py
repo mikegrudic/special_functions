@@ -44,7 +44,7 @@ def planck_upper_series(x):
     expx_inv = np.exp(-x)
     expx_inv_power = expx_inv  # will cumulatively multiply at each iteration
     n = 1
-    while err > tol * series_sum:
+    while np.abs(err) > tol * series_sum:
         nx = n * x
         err = (6 + nx * (6 + nx * (3 + nx))) * expx_inv_power / (n * n * n * n)
         expx_inv_power *= expx_inv
@@ -140,11 +140,10 @@ def planck_integral(x1, x2):
         if upper_precision:
             return f1 * sign
         return (1 - f1) * sign
-    else:
-        if x2 < cutoff_upper_lower:
-            f2 = planck_lower_series(x2)
-            return (f2 - f1) * sign
-        f2 = planck_upper_series(x2)
-        if upper_precision:
-            return (f1 - f2) * sign
-        return (1 - f1 - f2) * sign
+    if x2 < cutoff_upper_lower:
+        f2 = planck_lower_series(x2)
+        return (f2 - f1) * sign
+    f2 = planck_upper_series(x2)
+    if upper_precision:
+        return (f1 - f2) * sign
+    return (1 - f1 - f2) * sign
