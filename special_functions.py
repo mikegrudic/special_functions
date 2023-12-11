@@ -2,6 +2,7 @@
 from numba import njit, vectorize, float32, float64, cfunc
 from numba.typed import List
 import numpy as np
+from scipy.special import roots_legendre
 
 
 @vectorize(fastmath=True)
@@ -147,3 +148,19 @@ def planck_integral(x1, x2):
     if upper_precision:
         return (f1 - f2) * sign
     return (1 - f1 - f2) * sign
+
+
+@njit(fastmath=True, error_model="numpy")
+def planck_function(x):
+    """Planck function normalized to integrate to 1"""
+    return x**3 / (np.exp(x) - 1) * 0.15398973382026507
+
+
+roots, weights, mu = roots_legendre(12, mu=True)
+
+
+def planck_integral_gaussian_quadrature(a, b):
+    """Integrates the Planck function from a to b using 9th-order Gaussian quadrature"""
+    mu = 2
+    roots_mapped = ((b - a) / 2)[:, None] * (roots + 1) + a[:, None]
+    return np.sum(planck_function(roots_mapped) * weights, axis=1) * (b - a) / mu
