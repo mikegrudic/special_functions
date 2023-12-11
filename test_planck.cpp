@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <cmath>
 using namespace std;
 
 int main()
@@ -17,5 +18,12 @@ int main()
     }
     myfile << std::setprecision(16) << std::scientific << INFINITY << " " << planck_integral(x1, INFINITY) << "\n";
     myfile.close();
+
+    double sum = 0;
+    for (int i = 0; i < pow(10, 8); i++)
+    {
+        sum += planck_integral(1, 3.78);
+    }
+    std::cout << sum << "\n";
     return 0;
 }
