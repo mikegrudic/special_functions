@@ -22,7 +22,7 @@ int main()
     double sum = 0;
     for (int i = 0; i < pow(10, 8); i++)
     {
-        sum += planck_integral(1, 3.78);
+        sum += planck_integral(i / 1e8, 3.78);
     }
     std::cout << sum << "\n";
     return 0;

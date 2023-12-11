@@ -33,7 +33,7 @@ def logpoisson(counts, expected_counts):
     return counts * np.log(expected_counts) - expected_counts - logfact
 
 
-@njit(fastmath=True)
+@njit(fastmath=True, error_model="numpy")
 def planck_upper_series(x):
     """Series solution for upper Planck integral from x to infinity evaluated to machine
     precision. Most efficient for large x.
@@ -54,7 +54,7 @@ def planck_upper_series(x):
     return series_sum * 0.15398973382026503
 
 
-@njit(fastmath=True)
+@njit(fastmath=True, error_model="numpy")
 def planck_lower_series(x):
     """Series solution for Planck function integral from 0 to x,
     most efficient for large x, valid to machine precision on [0,3]
