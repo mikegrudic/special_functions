@@ -72,7 +72,7 @@ def planck2_upper_series(x):
         series_sum += err
         n += 1
 
-    return series_sum * 0.4159536862903537
+    return series_sum * 0.15398973382026503
 
 
 @njit(fastmath=True, error_model="numpy")
@@ -130,6 +130,10 @@ def planck3_lower_series(x):
 def planck2_lower_series(x):
     """Series solution for integral norm * x^2/(exp(x)-1) from 0 to x,
     most efficient for large x, valid to machine precision on [0,3]
+
+    Normalization is 1/integral(x^3 exp(x) - 1) = 15/pi^4, such that
+    this can be used to compute average photon energies or photon
+    numbers
     """
     coeffs = np.array(
         [
@@ -169,7 +173,7 @@ def planck2_lower_series(x):
         n -= 1
     val *= x
 
-    return val * 0.4159536862903537
+    return val * 0.15398973382026503
 
 
 @vectorize(
@@ -225,6 +229,10 @@ def planck2_integral(x1, x2):
     """Returns the definite integral of the normalized (frequency)
     Planck function norm * x^2/(exp(x)-1) from x1 to x2, accurate to machine
     precision
+
+    Normalization is 1/integral(x^3 exp(x) - 1) = 15/pi^4, such that
+    this can be used to compute average photon energies or photon
+    numbers
     """
     if x2 < x1:
         # assume x1 < x2 throughout, and just remember the original parity
