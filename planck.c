@@ -1,4 +1,4 @@
-// Functions to evaluate definite integrals of the function
+// Functions to evaluate definite integrals of the normalized, dimensionless frequency Planck function
 // f = 15/pi^4 x^3/(exp(x)-1)
 #include "math.h"
 
@@ -8,7 +8,7 @@ double planck_integral(double x1, double x2);
 
 // Returns the definite integral of the normalized (frequency) Planck
 // function f = 15/pi^4 * x^3/(exp(x)-1) from x1 to x2, accurate to machine
-// precision
+// precision for any valid floating point arguments on [0,inf)
 double planck_integral(double x1, double x2)
 {
     double sign;
