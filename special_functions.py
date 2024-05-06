@@ -1,6 +1,6 @@
 """Approximations for useful special mathematical functions"""
 
-from numba import njit, vectorize, float32, float64, int32, int64
+from numba import njit, vectorize, float32, float64, int32, int64, boolean
 import numpy as np
 
 
@@ -33,10 +33,43 @@ def logpoisson(counts, expected_counts):
     return counts * np.log(expected_counts) - expected_counts - logfact
 
 
+# pre-computed lookup table of complete Planck integrals; entry i is integral of order i+1
+PLANCK_NORM = np.array(
+    [
+        1.6449340668482264e00,
+        2.4041138063191885e00,
+        6.4939394022668289e00,
+        2.4886266123440880e01,
+        1.2208116743813390e02,
+        7.2601147971498449e02,
+        5.0605498752376398e03,
+        4.0400978398747633e04,
+        3.6324091142238257e05,
+        3.6305933116066284e06,
+        3.9926622987731084e07,
+        4.7906037988983148e08,
+        6.2274021934109726e09,
+        8.7180957830172058e10,
+        1.3076943522189138e12,
+        2.0922949679481512e13,
+        3.5568878585922375e14,
+        6.4023859228189210e15,
+        1.2164521645363939e17,
+        2.4329031685078615e18,
+    ]
+)
+
+
 @njit(fastmath=True, error_model="numpy")
 def planck_function(x, p=3):
     """General Planck function x^p / (exp(x) - 1)"""
     return x**p / np.expm1(x)
+
+
+@njit(fastmath=True, error_model="numpy")
+def planck_norm(p):
+    """Complete Planck integral from 0 to infinity"""
+    return PLANCK_NORM[p - 1]
 
 
 @njit(fastmath=True, error_model="numpy")
@@ -167,12 +200,15 @@ def planck_gaussquad(a: float, b: float, p: int):
 
 
 @vectorize(
-    [float32(float32, float32, int32), float64(float64, float64, int64)],
+    [
+        float32(float32, float32, int32),
+        float64(float64, float64, int64),
+    ],
     target="parallel",
     fastmath=True,
 )
 def planck_integral(x1, x2, p):
-    """Returns the definite integral of the un-normalized Planck function
+    """Returns the definite integral of the normalized Planck function
     norm * x^p/(exp(x)-1) from x1 to x2, accurate to machine precision
     """
     if x1 > x2:  # assume x2 is the larger in magnitude
@@ -185,4 +221,6 @@ def planck_integral(x1, x2, p):
 
     if x1 > cutoff:
         return sign * planck_upper_series(x1, x2, p)
+    if x2 < cutoff:
+        return sign * planck_gaussquad(x1, x2, p)
     return sign * (planck_gaussquad(x1, cutoff, p) + planck_upper_series(cutoff, x2, p))
