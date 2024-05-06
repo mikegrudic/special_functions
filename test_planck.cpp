@@ -20,12 +20,12 @@ int main()
     }
     myfile << std::setprecision(16) << std::scientific << x1 << " " << INFINITY << " " << planck_integral(x1, INFINITY, p) << "\n";
     myfile.close();
-    return 0;
 
     double sum = 0;
     for (int i = 0; i < pow(10, 8); i++)
     {
-        sum += planck3_lower(i / 1e8);
+        // sum += planck3_lower(i / 1e8);
+        sum += planck_gaussquad(0.0, i / 1e8, 3);
     }
-    cout << sum << endl;
+    std::cout << sum << std::endl;
 }
