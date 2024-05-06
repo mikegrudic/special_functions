@@ -120,31 +120,6 @@ def planck_upper_series(x1: float, x2: float = np.inf, p: int = 3):
 
 
 @njit(fastmath=True, error_model="numpy")
-def planck_upper_series_term(x, p, n):
-    """n'th term in the summed series for the Planck integral to infinity"""
-    nx = n * x
-    match p:
-        case 2:
-            term = (2 + nx * (2 + nx)) / (n * n * n)
-        case 3:
-            term = (6 + nx * (6 + nx * (3 + nx))) / (n * n * n * n)
-        case 4:
-            term = (24 + nx * (24 + nx * (12 + nx * (4 + nx)))) / (n * n * n * n * n)
-        case _:
-            term = m = 1
-            nprod = n
-            for i in range(p, 0, -1):
-                m *= i
-                term = term * nx + m
-                nprod *= n
-            term /= nprod
-    return term
-
-
-# roots, weights, mu = roots_legendre(12, mu=True)
-
-
-@njit(fastmath=True, error_model="numpy")
 def planck_gaussquad(a: float, b: float, p: int):
     """Gaussian quadrature for Planck function integral from a to b."""
     mu = 2.0
